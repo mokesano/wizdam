@@ -211,4 +211,33 @@ class AuthManager
 
         echo $twig->render('pages/auth/login.twig', ['error' => $error]);
     }
+
+    /** Versi Response object untuk handleLoginPage - digunakan oleh router baru */
+    public function handleLoginPageWithResponse(\Twig\Environment $twig, string $method): \Wizdam\Http\Response
+    {
+        if ($this->isLoggedIn()) {
+            return \Wizdam\Http\Response::redirect('/dashboard');
+        }
+
+        $error = null;
+
+        if ($method === 'POST') {
+            $email    = trim($_POST['email']    ?? '');
+            $password = trim($_POST['password'] ?? '');
+
+            if ($this->loginWithCredentials($email, $password)) {
+                return \Wizdam\Http\Response::redirect('/dashboard');
+            }
+            $error = 'Email atau password salah.';
+        }
+
+        // Redirect ke ORCID
+        if (isset($_GET['orcid'])) {
+            $this->redirectToOrcid();
+            return \Wizdam\Http\Response::redirect(''); // Tidak akan tercapai
+        }
+
+        $html = $twig->render('pages/auth/login.twig', ['error' => $error]);
+        return \Wizdam\Http\Response::html($html);
+    }
 }

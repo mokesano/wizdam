@@ -6,6 +6,8 @@ namespace Wizdam\Handlers\Tools;
 
 use Wizdam\Database\DBConnector;
 use Wizdam\Services\Core\AuthManager;
+use Wizdam\Http\Request;
+use Wizdam\Http\Response;
 
 /**
  * Kompresi PDF menggunakan Ghostscript (gs) yang terinstal di server.
@@ -40,6 +42,20 @@ class PdfCompressHandler
             'pageTitle'       => 'PDF Compressor – Wizdam Tools',
             'qualityPresets'  => array_keys(self::QUALITY_PRESETS),
         ]);
+    }
+
+    /** Versi Response object untuk handle() - digunakan oleh router baru */
+    public function handleWithResponse(Request $request): Response
+    {
+        if ($request->method === 'POST') {
+            return $this->processWithResponse($request);
+        }
+
+        $html = $this->twig->render('pages/tools/pdf_compress.twig', [
+            'pageTitle'       => 'PDF Compressor – Wizdam Tools',
+            'qualityPresets'  => array_keys(self::QUALITY_PRESETS),
+        ]);
+        return Response::html($html);
     }
 
     private function process(): void
@@ -105,6 +121,67 @@ class PdfCompressHandler
         $reduction      = round((1 - $compressedSize / $originalSize) * 100, 1);
 
         echo json_encode([
+            'url'             => '/assets/pdf/compressed/' . $outputName,
+            'original_kb'     => round($originalSize   / 1024, 1),
+            'compressed_kb'   => round($compressedSize / 1024, 1),
+            'reduction_pct'   => $reduction,
+            'quality_preset'  => $preset,
+        ]);
+    }
+
+    private function processWithResponse(Request $request): Response
+    {
+        if (!$this->isGhostscriptAvailable()) {
+            return Response::json(['error' => 'Ghostscript tidak tersedia di server ini.'], 503);
+        }
+
+        $files = $request->server['FILES'] ?? $_FILES;
+        $file = $files['pdf'] ?? null;
+        
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return Response::json(['error' => 'File tidak valid atau tidak diunggah.'], 400);
+        }
+
+        if ($file['size'] > self::MAX_FILE_SIZE) {
+            return Response::json(['error' => 'Ukuran file melebihi 50 MB.'], 413);
+        }
+
+        $mime = mime_content_type($file['tmp_name']);
+        if ($mime !== 'application/pdf') {
+            return Response::json(['error' => 'File harus berformat PDF.'], 415);
+        }
+
+        $preset  = $request->getBody('quality') ?? 'ebook';
+        $dpi     = self::QUALITY_PRESETS[$preset] ?? '/ebook';
+
+        if (!is_dir(self::OUTPUT_DIR)) {
+            mkdir(self::OUTPUT_DIR, 0755, true);
+        }
+
+        $inputPath  = $file['tmp_name'];
+        $outputName = uniqid('pdf_', true) . '.pdf';
+        $outputPath = self::OUTPUT_DIR . $outputName;
+
+        // Bangun command Ghostscript – semua argumen di-escape
+        $cmd = sprintf(
+            'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=%s '
+            . '-dNOPAUSE -dQUIET -dBATCH -sOutputFile=%s %s 2>&1',
+            escapeshellarg($dpi),
+            escapeshellarg($outputPath),
+            escapeshellarg($inputPath)
+        );
+
+        exec($cmd, $output, $returnCode);
+
+        if ($returnCode !== 0 || !file_exists($outputPath)) {
+            return Response::json(['error' => 'Kompresi gagal: ' . implode(' ', $output)], 500);
+        }
+
+        $originalSize   = $file['size'];
+        $compressedSize = filesize($outputPath);
+        $reduction      = round((1 - $compressedSize / $originalSize) * 100, 1);
+
+        return Response::json([
             'url'             => '/assets/pdf/compressed/' . $outputName,
             'original_kb'     => round($originalSize   / 1024, 1),
             'compressed_kb'   => round($compressedSize / 1024, 1),
