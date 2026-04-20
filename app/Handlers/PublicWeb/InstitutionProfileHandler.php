@@ -9,6 +9,8 @@ use Wizdam\Database\Models\InstitutionModel;
 use Wizdam\Database\Models\ImpactScoreModel;
 use Wizdam\Services\Core\AuthManager;
 use Wizdam\Services\SangiaApi\ImpactScoreClient;
+use Wizdam\Http\Request;
+use Wizdam\Http\Response;
 
 class InstitutionProfileHandler
 {
@@ -63,5 +65,44 @@ class InstitutionProfileHandler
             'pubTrend'     => $pubTrend,
             'pageTitle'    => ($institution['name'] ?? "Institusi #$id") . ' – Wizdam AI-Sikola',
         ]);
+    }
+
+    /** Versi Response object untuk show() - digunakan oleh router baru */
+    public function showWithResponse(int $id): Response
+    {
+        $institution = $this->institutionModel->findWithResearcherCount($id);
+
+        if (!$institution) {
+            return Response::error("Institusi dengan ID $id tidak ditemukan.", 404);
+        }
+
+        $researchers  = $this->institutionModel->getResearchers($id);
+
+        $scoreClient  = new ImpactScoreClient();
+        $score        = $scoreClient->getLatest('institution', $id);
+        $scoreHistory = $this->scoreModel->getHistory('institution', $id);
+
+        // Tren publikasi per tahun
+        $pubTrend = $this->db->fetchAll(
+            'SELECT a.year, COUNT(a.id) AS total_articles, SUM(a.citations) AS total_citations
+             FROM articles a
+             JOIN article_authors aa ON aa.article_id = a.id
+             JOIN researchers r ON aa.researcher_id = r.id
+             WHERE r.affiliation_id = ?
+             GROUP BY a.year
+             ORDER BY a.year ASC',
+            [$id]
+        );
+
+        $html = $this->twig->render('pages/public/institution_profile.twig', [
+            'institution'  => $institution,
+            'researchers'  => $researchers,
+            'score'        => $score,
+            'scoreHistory' => $scoreHistory,
+            'pubTrend'     => $pubTrend,
+            'pageTitle'    => ($institution['name'] ?? "Institusi #$id") . ' – Wizdam AI-Sikola',
+        ]);
+
+        return Response::html($html);
     }
 }

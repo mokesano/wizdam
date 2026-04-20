@@ -10,6 +10,8 @@ use Wizdam\Database\Models\ImpactScoreModel;
 use Wizdam\Services\Core\AuthManager;
 use Wizdam\Services\SangiaApi\IndexingIntegrator;
 use Wizdam\Services\SangiaApi\ImpactScoreClient;
+use Wizdam\Http\Request;
+use Wizdam\Http\Response;
 
 class JournalProfileHandler
 {
@@ -61,5 +63,41 @@ class JournalProfileHandler
             'scoreHistory' => $scoreHistory,
             'pageTitle'    => ($journal['title'] ?? "Jurnal ISSN $issn") . ' – Wizdam AI-Sikola',
         ]);
+    }
+
+    /** Versi Response object untuk show() - digunakan oleh router baru */
+    public function showWithResponse(string $issn): Response
+    {
+        $journal = $this->journalModel->findByIssn($issn);
+
+        if (!$journal) {
+            return Response::error("Jurnal dengan ISSN $issn tidak ditemukan.", 404);
+        }
+
+        $articles     = $this->journalModel->getRecentArticles((int) $journal['id']);
+        $indexing     = $this->journalModel->getIndexingMetrics((int) $journal['id']);
+
+        $scoreClient  = new ImpactScoreClient();
+        $score        = $scoreClient->getLatest('journal', (int) $journal['id']);
+        $scoreHistory = $this->scoreModel->getHistory('journal', (int) $journal['id']);
+
+        // Cek indeksasi real-time jika diminta
+        $liveIndexing = null;
+        if (isset($_GET['check_indexing'])) {
+            $integrator   = new IndexingIntegrator();
+            $liveIndexing = $integrator->checkByIssn($journal['issn']);
+        }
+
+        $html = $this->twig->render('pages/public/journal_profile.twig', [
+            'journal'      => $journal,
+            'articles'     => $articles,
+            'indexing'     => $indexing,
+            'liveIndexing' => $liveIndexing,
+            'score'        => $score,
+            'scoreHistory' => $scoreHistory,
+            'pageTitle'    => ($journal['title'] ?? "Jurnal ISSN $issn") . ' – Wizdam AI-Sikola',
+        ]);
+
+        return Response::html($html);
     }
 }

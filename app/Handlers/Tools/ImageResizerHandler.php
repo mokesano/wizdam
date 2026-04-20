@@ -6,6 +6,8 @@ namespace Wizdam\Handlers\Tools;
 
 use Wizdam\Database\DBConnector;
 use Wizdam\Services\Core\AuthManager;
+use Wizdam\Http\Request;
+use Wizdam\Http\Response;
 
 class ImageResizerHandler
 {
@@ -29,6 +31,19 @@ class ImageResizerHandler
         echo $this->twig->render('pages/tools/image_resizer.twig', [
             'pageTitle' => 'Image Resizer – Wizdam Tools',
         ]);
+    }
+
+    /** Versi Response object untuk handle() - digunakan oleh router baru */
+    public function handleWithResponse(Request $request): Response
+    {
+        if ($request->method === 'POST') {
+            return $this->processWithResponse($request);
+        }
+
+        $html = $this->twig->render('pages/tools/image_resizer.twig', [
+            'pageTitle' => 'Image Resizer – Wizdam Tools',
+        ]);
+        return Response::html($html);
     }
 
     private function process(): void
@@ -98,6 +113,72 @@ class ImageResizerHandler
         imagedestroy($dstImage);
 
         echo json_encode([
+            'url'      => '/assets/images/resized/' . $filename,
+            'width'    => $width,
+            'height'   => $height,
+            'size_kb'  => round(filesize($outPath) / 1024, 1),
+        ]);
+    }
+
+    private function processWithResponse(Request $request): Response
+    {
+        $files = $request->server['FILES'] ?? $_FILES;
+        $file = $files['image'] ?? null;
+        
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return Response::json(['error' => 'File tidak valid atau tidak diunggah.'], 400);
+        }
+
+        if ($file['size'] > self::MAX_FILE_SIZE) {
+            return Response::json(['error' => 'Ukuran file melebihi 10 MB.'], 413);
+        }
+
+        $mime = mime_content_type($file['tmp_name']);
+        if (!in_array($mime, self::ALLOWED_TYPES, true)) {
+            return Response::json(['error' => 'Tipe file tidak didukung. Gunakan JPEG, PNG, WebP, atau GIF.'], 415);
+        }
+
+        $width   = max(1, min(5000, (int) ($request->getBody('width')  ?? 800)));
+        $height  = max(1, min(5000, (int) ($request->getBody('height') ?? 0)));
+        $quality = max(10, min(100, (int) ($request->getBody('quality') ?? 85)));
+
+        $srcImage = $this->loadImage($file['tmp_name'], $mime);
+        if (!$srcImage) {
+            return Response::json(['error' => 'Gagal membaca gambar.'], 422);
+        }
+
+        $origW = imagesx($srcImage);
+        $origH = imagesy($srcImage);
+
+        // Hitung tinggi proporsional jika height = 0
+        if ($height === 0) {
+            $height = (int) round($origH * ($width / $origW));
+        }
+
+        $dstImage = imagecreatetruecolor($width, $height);
+
+        // Pertahankan transparansi untuk PNG/WebP
+        if (in_array($mime, ['image/png', 'image/webp', 'image/gif'], true)) {
+            imagealphablending($dstImage, false);
+            imagesavealpha($dstImage, true);
+            $transparent = imagecolorallocatealpha($dstImage, 0, 0, 0, 127);
+            imagefilledrectangle($dstImage, 0, 0, $width, $height, $transparent);
+        }
+
+        imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $width, $height, $origW, $origH);
+
+        if (!is_dir(self::OUTPUT_DIR)) {
+            mkdir(self::OUTPUT_DIR, 0755, true);
+        }
+
+        $filename = uniqid('img_', true) . '.jpg';
+        $outPath  = self::OUTPUT_DIR . $filename;
+
+        imagejpeg($dstImage, $outPath, $quality);
+        imagedestroy($srcImage);
+        imagedestroy($dstImage);
+
+        return Response::json([
             'url'      => '/assets/images/resized/' . $filename,
             'width'    => $width,
             'height'   => $height,
