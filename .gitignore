@@ -1,37 +1,30 @@
 ```
-# Dependencies
-vendor/
-composer.lock
+# Installation files
+public/install/
 
-# Logs and temp files
+# Cache and temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
 *.log
-*.tmp
 
-# Environment
+# Environment files
 .env
 .env.local
-.env.*
+*.env.*
 
-# Editor/IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS
-.DS_Store
-Thumbs.db
+*.tmp
 
 # Build artifacts
 dist/
 build/
-coverage/
-htmlcov/
-*.pyc
-__pycache__/
-
-# Cache
-.cache/
-.mypy_cache/
-.pytest_cache/
+target/
 ```
