@@ -8,7 +8,7 @@ use PDO;
 use Twig\Environment;
 use Wizdam\Database\DBConnector;
 use Wizdam\Services\Core\AuthManager;
-use Wizdam\Services\WizdamApiClient;
+use Wizdam\Services\SangiaApi\SangiaGateway;
 use Wizdam\Services\ApiKeyManager;
 use Wizdam\Jobs\QueueManager;
 use Dotenv\Dotenv;
@@ -24,7 +24,7 @@ class App
     private ?PDO $db = null;
     private ?Environment $twig = null;
     private ?AuthManager $auth = null;
-    private ?WizdamApiClient $apiClient = null;
+    private ?SangiaGateway $apiClient = null;
     private ?ApiKeyManager $apiKeyManager = null;
     private ?QueueManager $queueManager = null;
 
@@ -120,10 +120,10 @@ class App
         return $this->db;
     }
 
-    public function getApiClient(): WizdamApiClient
+    public function getApiClient(): SangiaGateway
     {
         if ($this->apiClient === null) {
-            $this->apiClient = new WizdamApiClient($this->db);
+            $this->apiClient = new SangiaGateway();
         }
         return $this->apiClient;
     }
