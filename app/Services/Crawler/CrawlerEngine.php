@@ -77,10 +77,10 @@ class CrawlerEngine
             }
         }
 
-        if ($persist && $profile) {
-            RawDataPersister::saveAuthorProfile($orcid, $profile);
-            $this->stats['persisted']++;
-        }
+        // Note: per-source persistence is handled inside each helper method.
+        // fromCitationNetworks → harvestCitations → saveCitation (per DOI).
+        // Calling saveAuthorProfile here would write wrong-keyed data (orcid/scholar/citations)
+        // into columns that expect orcid_person/orcid_works/scopus, corrupting cached profiles.
 
         if ($enrichSangia && !empty($profile['orcid'])) {
             try {
@@ -111,15 +111,17 @@ class CrawlerEngine
      */
     public function harvestJournal(string $target, array $opts = []): array
     {
-        $from           = $opts['from']           ?? null;
-        $until          = $opts['until']          ?? null;
-        $set            = $opts['set']            ?? null;
+        $from           = $opts['from']           ?? '';
+        $until          = $opts['until']          ?? '';
+        $set            = $opts['set']            ?? '';
         $metadataPrefix = $opts['metadataPrefix'] ?? 'oai_dc';
         $maxRecords     = $opts['maxRecords']      ?? 500;
         $persist        = $opts['persist']         ?? true;
 
         $collected = [];
 
+        // Persistence handled here so OAI harvester's own $persist is always false,
+        // preventing double-writes when $onBatch and $persist=true are both active.
         $onBatch = function (array $batch) use (&$collected, $persist, $maxRecords): bool {
             foreach ($batch as $article) {
                 $collected[] = $article;
@@ -140,18 +142,20 @@ class CrawlerEngine
         if (in_array(strtolower($target), $knownBuiltins, true)) {
             $method = 'harvest' . ucfirst(strtolower($target));
             if (method_exists($this->oaiHarvester, $method)) {
-                $this->oaiHarvester->$method($from, $until, $set, $onBatch);
+                // Bug fix: pass ($from, $until, $set, persist=false, $onBatch) — 5 args matching updated signatures
+                $this->oaiHarvester->$method($from, $until, $set, false, $onBatch);
             } else {
-                $this->oaiHarvester->harvestAuto($target, $from, $until, $set, $onBatch);
+                $this->oaiHarvester->harvestAuto($target, $from, $until, $set, false, $onBatch);
             }
         } elseif (filter_var($target, FILTER_VALIDATE_URL)) {
+            // Bug fix: correct parameter order — harvest($url, $prefix, $set, $from, $until, ...)
             $this->oaiHarvester->harvest(
                 $target,
                 $metadataPrefix,
+                $set,
                 $from,
                 $until,
-                $set,
-                $persist,
+                false,
                 $onBatch
             );
         }

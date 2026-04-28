@@ -227,41 +227,41 @@ class OaiPmhHarvester
     // Harvest target terkenal (convenience methods)
     // ──────────────────────────────────────────────────────────────────────────
 
-    /** Harvest dari Garuda Kemdikbud sejak tanggal tertentu. */
-    public function harvestGaruda(string $from = '', string $set = '', bool $persist = true): array
+    /** Harvest dari Garuda Kemdikbud. */
+    public function harvestGaruda(string $from = '', string $until = '', string $set = '', bool $persist = true, ?callable $onBatch = null): array
     {
-        return $this->harvest(self::KNOWN_ENDPOINTS['garuda'], 'oai_dc', $set, $from, '', $persist);
+        return $this->harvest(self::KNOWN_ENDPOINTS['garuda'], 'oai_dc', $set, $from, $until, $persist, $onBatch);
     }
 
     /** Harvest dari Zenodo dengan filter set (mis: 'user-indonesia'). */
-    public function harvestZenodo(string $set = '', string $from = '', bool $persist = true): array
+    public function harvestZenodo(string $from = '', string $until = '', string $set = '', bool $persist = true, ?callable $onBatch = null): array
     {
-        return $this->harvest(self::KNOWN_ENDPOINTS['zenodo'], 'oai_dc', $set, $from, '', $persist);
+        return $this->harvest(self::KNOWN_ENDPOINTS['zenodo'], 'oai_dc', $set, $from, $until, $persist, $onBatch);
     }
 
     /** Harvest dari arXiv dengan filter set bidang (mis: 'cs', 'physics'). */
-    public function harvestArxiv(string $set = 'cs', string $from = '', bool $persist = true): array
+    public function harvestArxiv(string $from = '', string $until = '', string $set = 'cs', bool $persist = true, ?callable $onBatch = null): array
     {
-        return $this->harvest(self::KNOWN_ENDPOINTS['arxiv'], 'oai_dc', $set, $from, '', $persist);
+        return $this->harvest(self::KNOWN_ENDPOINTS['arxiv'], 'oai_dc', $set, $from, $until, $persist, $onBatch);
     }
 
     /** Harvest dari DOAJ. */
-    public function harvestDoaj(string $set = '', string $from = '', bool $persist = true): array
+    public function harvestDoaj(string $from = '', string $until = '', string $set = '', bool $persist = true, ?callable $onBatch = null): array
     {
-        return $this->harvest(self::KNOWN_ENDPOINTS['doaj'], 'oai_dc', $set, $from, '', $persist);
+        return $this->harvest(self::KNOWN_ENDPOINTS['doaj'], 'oai_dc', $set, $from, $until, $persist, $onBatch);
     }
 
-    /** Harvest dari PMC menggunakan JATS (jika tersedia). */
-    public function harvestPmc(string $set = '', string $from = '', bool $persist = true): array
+    /** Harvest dari PMC. */
+    public function harvestPmc(string $from = '', string $until = '', string $set = '', bool $persist = true, ?callable $onBatch = null): array
     {
-        return $this->harvest(self::KNOWN_ENDPOINTS['pmc'], 'oai_dc', $set, $from, '', $persist);
+        return $this->harvest(self::KNOWN_ENDPOINTS['pmc'], 'oai_dc', $set, $from, $until, $persist, $onBatch);
     }
 
     /**
      * Harvest dari endpoint jurnal mana pun dengan deteksi format otomatis.
      * Mencoba oai_jats → mods → oai_dc secara berurutan.
      */
-    public function harvestAuto(string $baseUrl, string $from = '', bool $persist = true): array
+    public function harvestAuto(string $baseUrl, string $from = '', string $until = '', string $set = '', bool $persist = true, ?callable $onBatch = null): array
     {
         $formats = array_column($this->listMetadataFormats($baseUrl), 'metadataPrefix');
 
@@ -275,7 +275,7 @@ class OaiPmhHarvester
             }
         }
 
-        return $this->harvest($baseUrl, $prefix, '', $from, '', $persist);
+        return $this->harvest($baseUrl, $prefix, $set, $from, $until, $persist, $onBatch);
     }
 
     // ──────────────────────────────────────────────────────────────────────────
