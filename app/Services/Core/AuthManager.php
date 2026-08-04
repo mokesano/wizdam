@@ -158,7 +158,7 @@ class AuthManager
             $userId = $this->register($email, bin2hex(random_bytes(24)), $name);
         } catch (\RuntimeException) {
             // Sudah terdaftar, lakukan force-login
-            $userId = $this->auth->admin()->getUserIdByEmail($email);
+            $userId = $this->auth->admin()->getUserIdByEmail($email); // Undefined method 'getUserIdByEmail'.
             $this->auth->admin()->logInAsUserById($userId);
             header('Location: /dashboard');
             exit;
@@ -196,7 +196,7 @@ class AuthManager
 
     // ── Halaman Login (render Twig) ─────────────────────────────────────────
 
-    public function handleLoginPage(\Twig\Environment $twig, string $method): void
+    public function handleLoginPage(\Twig\Environment $twig, string $method): void // Undefined type 'Twig\Environment'.
     {
         if ($this->isLoggedIn()) {
             header('Location: /dashboard');
@@ -225,7 +225,7 @@ class AuthManager
     }
 
     /** Versi Response object untuk handleLoginPage - digunakan oleh router baru */
-    public function handleLoginPageWithResponse(\Twig\Environment $twig, string $method): \Sangia\Http\Response
+    public function handleLoginPageWithResponse(\Twig\Environment $twig, string $method): \Sangia\Http\Response // Undefined type 'Twig\Environment'.
     {
         if ($this->isLoggedIn()) {
             return \Sangia\Http\Response::redirect('/dashboard');

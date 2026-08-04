@@ -35,7 +35,7 @@ class UserDashboardHandler
 
     public function index(): void
     {
-        $response = $this->indexWithResponse(request());
+        $response = $this->indexWithResponse(request()); // Undefined function 'Sangia\Handlers\PrivateWeb\request'.
         $response->send();
     }
 
@@ -80,7 +80,7 @@ class UserDashboardHandler
             [$userId]
         );
 
-        return Response::react('DashboardPage', [
+        return Response::react('DashboardPage', [ // Undefined method 'react'.
             'researcher'    => $researcher,
             'score'         => $score,
             'scoreHistory'  => $scoreHistory,

@@ -33,7 +33,7 @@ class ErrorPageHandler
 
         $message = $message ?: ($messages[$code] ?? 'Terjadi kesalahan.');
 
-        return Response::react('ErrorPage', [
+        return Response::react('ErrorPage', [ // Undefined method 'react'.
             'code'    => $code,
             'message' => $message,
             'pageTitle' => "Error $code – Sangia Scieco",

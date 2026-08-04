@@ -184,7 +184,7 @@ class SangiaApiContractValidator
         if ($decoded['status'] === 'error') {
             // Error response dari API — bukan kontrak violation, tapi perlu dilempar
             $message = $decoded['message'] ?? 'API mengembalikan error tanpa pesan';
-            throw new SangiaApiException($message, $decoded['error_code'] ?? 'UNKNOWN_ERROR');
+            throw new SangiaApiException($message, $decoded['error_code'] ?? 'UNKNOWN_ERROR'); // Expected type 'Throwable'. Found 'Sangia\Library\Exception\SangiaApiException'.
         }
 
         if ($decoded['status'] === 'success' && !isset($decoded['data'])) {

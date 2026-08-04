@@ -74,7 +74,7 @@ class DatabaseManager
                 ]
             );
 
-            $this->connections[$connectionName] = new PdoDatabase($pdo);
+            $this->connections[$connectionName] = new PdoDatabase($pdo); // Cannot access private constructor Delight\Db\PdoDatabase::__construct() from DatabaseManager scope.
         } catch (PDOException $e) {
             throw new \RuntimeException("Gagal koneksi ke database: " . $e->getMessage());
         }
@@ -95,9 +95,9 @@ class DatabaseManager
     /**
      * Buat TableGateway untuk tabel tertentu
      */
-    public function table(string $tableName, string $connection = 'default'): TableGateway
+    public function table(string $tableName, string $connection = 'default'): TableGateway // Undefined type 'Delight\Db\TableGateway\TableGateway'.
     {
-        return new TableGateway($tableName, $this->getConnection($connection));
+        return new TableGateway($tableName, $this->getConnection($connection)); // Undefined type 'Delight\Db\TableGateway\TableGateway'.
     }
 
     /**
@@ -105,7 +105,7 @@ class DatabaseManager
      */
     public function beginTransaction(string $connection = 'default'): void
     {
-        $this->getConnection($connection)->getPdo()->beginTransaction();
+        $this->getConnection($connection)->getPdo()->beginTransaction(); // Undefined method 'getPdo'.
     }
 
     /**
@@ -113,7 +113,7 @@ class DatabaseManager
      */
     public function commit(string $connection = 'default'): void
     {
-        $this->getConnection($connection)->getPdo()->commit();
+        $this->getConnection($connection)->getPdo()->commit(); // Undefined method 'getPdo'.
     }
 
     /**
@@ -121,7 +121,7 @@ class DatabaseManager
      */
     public function rollback(string $connection = 'default'): void
     {
-        $this->getConnection($connection)->getPdo()->rollBack();
+        $this->getConnection($connection)->getPdo()->rollBack(); // Undefined method 'getPdo'.
     }
 
     /**
@@ -129,7 +129,7 @@ class DatabaseManager
      */
     public function query(string $sql, array $params = [], string $connection = 'default'): \PDOStatement
     {
-        $stmt = $this->getConnection($connection)->getPdo()->prepare($sql);
+        $stmt = $this->getConnection($connection)->getPdo()->prepare($sql); // Undefined method 'getPdo'.
         $stmt->execute($params);
         return $stmt;
     }

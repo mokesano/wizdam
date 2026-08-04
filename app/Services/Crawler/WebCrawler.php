@@ -259,7 +259,7 @@ class WebCrawler
 
         if ($json) {
             $data = json_decode($json, true);
-            $page = reset($data['query']['pages'] ?? []);
+            $page = reset($data['query']['pages'] ?? []); // Only variables should be passed by reference.
             if ($page && !isset($page['missing'])) {
                 $result['name']    = $page['title'] ?? $institutionName;
                 $result['summary'] = $page['extract'] ?? null;

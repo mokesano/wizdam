@@ -71,7 +71,7 @@ class InstitutionProfileHandler
             [$id]
         );
 
-        return Response::react('InstitutionProfilePage', [
+        return Response::react('InstitutionProfilePage', [ // Undefined method 'react'.
             'institution'  => $institution,
             'researchers'  => $researchers,
             'score'        => $score,

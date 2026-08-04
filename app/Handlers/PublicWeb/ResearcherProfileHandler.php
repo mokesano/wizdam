@@ -50,7 +50,7 @@ class ResearcherProfileHandler
 
         $avgPillars = $this->scoreModel->getAveragePillars('researcher');
 
-        return Response::react('ResearcherListPage', [
+        return Response::react('ResearcherListPage', [ // Undefined method 'react'.
             'researchers' => $researchers,
             'avgPillars'  => $avgPillars,
             'field'       => $field,
@@ -120,7 +120,7 @@ class ResearcherProfileHandler
             [$researcherId]
         );
 
-        return Response::react('ResearcherProfilePage', [
+        return Response::react('ResearcherProfilePage', [ // Undefined method 'react'.
             'researcher'     => $researcher,
             'score'          => $score,
             'scoreHistory'   => $scoreHistory,

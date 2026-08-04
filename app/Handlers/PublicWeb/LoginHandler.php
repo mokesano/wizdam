@@ -35,7 +35,7 @@ class LoginHandler
             return Response::redirect('/dashboard');
         }
 
-        return Response::react('LoginPage', [
+        return Response::react('LoginPage', [ // Undefined method 'react'.
             'pageTitle' => 'Masuk – Sangia Scieco',
         ]);
     }
@@ -50,7 +50,7 @@ class LoginHandler
         }
 
         try {
-            $this->auth->login($email, $password);
+            $this->auth->login($email, $password); // Undefined method 'login'.
             return Response::json(['success' => true, 'redirect' => '/dashboard']);
         } catch (\Exception $e) {
             return Response::json(['error' => $e->getMessage()], 401);

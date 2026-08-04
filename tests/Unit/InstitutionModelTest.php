@@ -55,7 +55,7 @@ class InstitutionModelTest extends TestCase
             $this->markTestSkipped("Database tidak tersedia. Test ini memerlukan koneksi database.");
         }
         
-        $model = new InstitutionModel(DBConnector::getInstance());
+        $model = new InstitutionModel(DBConnector::getInstance()); // Too many arguments. Expected 0. Found 1.
         $this->assertInstanceOf(InstitutionModel::class, $model);
     }
 
@@ -65,7 +65,7 @@ class InstitutionModelTest extends TestCase
             $this->markTestSkipped("Database tidak tersedia. Test ini memerlukan koneksi database.");
         }
         
-        $model = new InstitutionModel(DBConnector::getInstance());
+        $model = new InstitutionModel(DBConnector::getInstance()); // Too many arguments. Expected 0. Found 1.
         
         $this->assertTrue(method_exists($model, 'findById'));
         $this->assertTrue(method_exists($model, 'findAll'));
@@ -80,7 +80,7 @@ class InstitutionModelTest extends TestCase
             $this->markTestSkipped("Database tidak tersedia. Test ini memerlukan koneksi database.");
         }
         
-        $model = new InstitutionModel(DBConnector::getInstance());
+        $model = new InstitutionModel(DBConnector::getInstance()); // Too many arguments. Expected 0. Found 1.
         $reflection = new \ReflectionClass($model);
         $method = $reflection->getMethod('findById');
         
@@ -93,8 +93,8 @@ class InstitutionModelTest extends TestCase
             $this->markTestSkipped("Database tidak tersedia. Test ini memerlukan koneksi database.");
         }
         
-        $model = new InstitutionModel(DBConnector::getInstance());
-        $result = $model->findAll();
+        $model = new InstitutionModel(DBConnector::getInstance()); // Too many arguments. Expected 0. Found 1.
+        $result = $model->findAll(); // Undefined method 'findAll'.
         
         $this->assertIsArray($result);
     }

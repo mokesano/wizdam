@@ -35,7 +35,7 @@ class QueueManager
         $this->queueDriver = $queueDriver;
 
         if ($queueDriver === 'redis' && extension_loaded('redis')) {
-            $this->redis = new \Redis();
+            $this->redis = new \Redis(); // Undefined type 'Redis'.
             $this->redis->connect(
                 $_ENV['REDIS_HOST'] ?? '127.0.0.1',
                 (int) ($_ENV['REDIS_PORT'] ?? 6379)
@@ -45,7 +45,7 @@ class QueueManager
 
     public function push(JobAbstract $job, int $priority = 5): string
     {
-        $jobId = $job->jobId;
+        $jobId = $job->jobId; // Cannot access protected property Sangia\Jobs\JobAbstract::$jobId from QueueManager scope.
 
         if ($this->queueDriver === 'redis' && $this->redis) {
             $this->redis->zAdd('queue:jobs', $priority, $job->serialize());

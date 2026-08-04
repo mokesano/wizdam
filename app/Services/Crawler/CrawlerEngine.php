@@ -97,7 +97,7 @@ class CrawlerEngine
 
         if ($enrichSangia && !empty($profile['orcid'])) {
             try {
-                $sangiaData = $this->sangiaGateway->post('/api/v1/enrich/researcher', [
+                $sangiaData = $this->sangiaGateway->post('/api/v1/enrich/researcher', [ // Cannot access private method Sangia\Services\SangiaApi\SangiaGateway::post() from CrawlerEngine scope.
                     'orcid'   => $orcid,
                     'profile' => $profile,
                 ]);
@@ -209,7 +209,7 @@ class CrawlerEngine
 
         try {
             $impact  = $this->webCrawler->crawlImpactFactorDatabases($issn);
-            $sinta   = $this->webCrawler->crawlResearchDirectories($issn, 'sinta');
+            $sinta   = $this->webCrawler->crawlResearchDirectories($issn, 'sinta'); // Too many arguments. Expected 1. Found 2.
             $result  = array_merge($impact, $sinta);
             $this->stats['harvested']++;
         } catch (\Throwable $e) {

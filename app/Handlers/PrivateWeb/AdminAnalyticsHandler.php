@@ -33,7 +33,7 @@ class AdminAnalyticsHandler
 
     public function index(): void
     {
-        $response = $this->indexWithResponse(request());
+        $response = $this->indexWithResponse(request()); // Undefined function 'Sangia\Handlers\PrivateWeb\request'.
         $response->send();
     }
 
@@ -94,7 +94,7 @@ class AdminAnalyticsHandler
             'SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT 20'
         );
 
-        return Response::react('AdminPage', [
+        return Response::react('AdminPage', [ // Undefined method 'react'.
             'stats'             => $stats,
             'harvestTrend'      => $harvestTrend,
             'scoreDistribution' => $scoreDistribution,

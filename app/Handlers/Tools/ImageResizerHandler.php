@@ -41,7 +41,7 @@ class ImageResizerHandler
             return;
         }
 
-        $response = $this->handleWithResponse(request());
+        $response = $this->handleWithResponse(request()); // Undefined function 'Sangia\Handlers\Tools\request'.
         $response->send();
     }
 
@@ -52,7 +52,7 @@ class ImageResizerHandler
             return $this->processWithResponse($request);
         }
 
-        return Response::react('ImageResizerPage', [
+        return Response::react('ImageResizerPage', [ // Undefined method 'react'.
             'pageTitle' => 'Image Resizer – Sangia Tools',
         ]);
     }

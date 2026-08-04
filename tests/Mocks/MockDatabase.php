@@ -36,7 +36,7 @@ class MockPDO extends PDO
 
     public function prepare(string $query, array $options = []): PDOStatement|false
     {
-        return new MockPDOStatement($this, $query);
+        return new MockPDOStatement($this, $query); // Cannot access private constructor Sangia\Tests\Mocks\MockPDOStatement::__construct() from MockPDO scope.
     }
 
     public function lastInsertId(?string $name = null): string|false
@@ -81,7 +81,7 @@ class MockPDOStatement extends PDOStatement
         return $stmt;
     }
 
-    public function execute(array $params = []): bool
+    public function execute(?array $params = null): bool
     {
         $this->params = $params;
         
@@ -107,18 +107,18 @@ class MockPDOStatement extends PDOStatement
         return $this->resultData[$this->currentIndex++];
     }
 
-    public function fetchAll(int $mode = PDO::FETCH_ASSOC, mixed $args = null): array
+    public function fetchAll(int $mode = PDO::FETCH_DEFAULT, mixed ...$args): array
     {
         $this->currentIndex = count($this->resultData);
         return $this->resultData;
     }
 
-    public function bindParam(int|string $param, mixed &$var, int $type = PDO::PARAM_STRING, int $maxLength = 0, mixed $driverOptions = null): bool
+    public function bindParam(int|string $param, mixed &$var, int $type = PDO::PARAM_STRING, int $maxLength = 0, mixed $driverOptions = null): bool // Undefined class constant 'PARAM_STRING'.
     {
         return true;
     }
 
-    public function bindValue(int|string $param, mixed $value, int $type = PDO::PARAM_STRING): bool
+    public function bindValue(int|string $param, mixed $value, int $type = PDO::PARAM_STRING): bool // Undefined class constant 'PARAM_STRING'.
     {
         $this->params[$param] = $value;
         return true;

@@ -68,7 +68,7 @@ class JournalProfileHandler
             $liveIndexing = $integrator->checkByIssn($journal['issn']);
         }
 
-        return Response::react('JournalProfilePage', [
+        return Response::react('JournalProfilePage', [ // Undefined method 'react'.
             'journal'      => $journal,
             'articles'     => $articles,
             'indexing'     => $indexing,

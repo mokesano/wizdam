@@ -20,49 +20,49 @@ use Sangia\Library\Helpers\Helpers;
 if (!function_exists('uuid')) {
     function uuid(): string
     {
-        return Helpers::uuid();
+        return Helpers::uuid(); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('format_number')) {
     function format_number(int|float $number, int $decimals = 0): string
     {
-        return Helpers::formatNumber($number, $decimals);
+        return Helpers::formatNumber($number, $decimals); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('truncate')) {
     function truncate(string $text, int $length = 100, string $suffix = '...'): string
     {
-        return Helpers::truncate($text, $length, $suffix);
+        return Helpers::truncate($text, $length, $suffix); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('slugify')) {
     function slugify(string $text): string
     {
-        return Helpers::slugify($text);
+        return Helpers::slugify($text); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('time_ago')) {
     function time_ago(\DateTimeInterface $date): string
     {
-        return Helpers::timeAgo($date);
+        return Helpers::timeAgo($date); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('sanitize')) {
     function sanitize(string $input): string
     {
-        return Helpers::sanitize($input);
+        return Helpers::sanitize($input); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('is_valid_email')) {
     function is_valid_email(string $email): bool
     {
-        return Helpers::isValidEmail($email);
+        return Helpers::isValidEmail($email); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
@@ -71,21 +71,21 @@ if (!function_exists('random_string')) {
         int $length = 32,
         string $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     ): string {
-        return Helpers::randomString($length, $charset);
+        return Helpers::randomString($length, $charset); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('human_file_size')) {
     function human_file_size(int $bytes): string
     {
-        return Helpers::humanFileSize($bytes);
+        return Helpers::humanFileSize($bytes); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
 if (!function_exists('is_ajax')) {
     function is_ajax(): bool
     {
-        return Helpers::isAjax();
+        return Helpers::isAjax(); // Undefined type 'Sangia\Library\Helpers\Helpers'.
     }
 }
 
@@ -156,7 +156,7 @@ if (!function_exists('redirect')) {
 if (!function_exists('view')) {
     function view(string $template, array $data = []): \Sangia\Http\Response
     {
-        return \Sangia\Http\Response::view($template, $data);
+        return \Sangia\Http\Response::view($template, $data); // Undefined method 'view'.
     }
 }
 

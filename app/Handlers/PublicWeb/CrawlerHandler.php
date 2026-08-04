@@ -24,7 +24,7 @@ class CrawlerHandler
 {
     public function index(Request $request): Response
     {
-        return Response::react('SangiaCrawlerPage', [
+        return Response::react('SangiaCrawlerPage', [ // Undefined method 'react'.
             'pageTitle' => 'Sangia Crawler – Sangia Scieco',
         ]);
     }

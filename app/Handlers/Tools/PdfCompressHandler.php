@@ -51,7 +51,7 @@ class PdfCompressHandler
             return;
         }
 
-        $response = $this->handleWithResponse(request());
+        $response = $this->handleWithResponse(request()); // Undefined function 'Sangia\Handlers\Tools\request'.
         $response->send();
     }
 
@@ -62,7 +62,7 @@ class PdfCompressHandler
             return $this->processWithResponse($request);
         }
 
-        return Response::react('PdfCompressPage', [
+        return Response::react('PdfCompressPage', [ // Undefined method 'react'.
             'pageTitle'       => 'PDF Compressor – Sangia Tools',
             'qualityPresets'  => array_keys(self::QUALITY_PRESETS),
         ]);

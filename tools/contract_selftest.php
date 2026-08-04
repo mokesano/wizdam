@@ -90,7 +90,7 @@ function probeEndpoint(string $url, array $payload = [], string $method = 'GET')
         'Content-Type: application/json',
         'Accept: application/json',
         'X-API-Key: ' . $apiKey,
-        'X-Contract-Version: ' . SangiaApiContractValidator::CONTRACT_VERSION,
+        'X-Contract-Version: ' . SangiaApiContractValidator::CONTRACT_VERSION, // Undefined type 'SangiaApiContractValidator'.
         'X-Contract-Test: true',
     ];
 
@@ -153,12 +153,12 @@ function runTest(string $name, callable $test): void
         $test();
         echo "\033[32mPASS\033[0m\n";
         $results[$name] = 'PASS';
-    } catch (SangiaContractException $e) {
+    } catch (SangiaContractException $e) { // Undefined type 'SangiaContractException'.
         echo "\033[31mFAIL\033[0m\n";
         echo "    " . $e->getMessage() . "\n";
         $results[$name] = 'FAIL (contract)';
         $hasFailure = true;
-    } catch (SangiaApiException $e) {
+    } catch (SangiaApiException $e) { // Undefined type 'SangiaApiException'.
         echo "\033[33mSKIP\033[0m (API error: " . $e->getMessage() . ")\n";
         $results[$name] = 'SKIP';
     } catch (\RuntimeException $e) {
@@ -282,7 +282,7 @@ if (!$anyJsonEndpoint) {
 
 echo "\033[1m[PHASE 3] Contract validation (hanya untuk endpoint yang merespons JSON)\033[0m\n\n";
 
-$validator   = SangiaApiContractValidator::getInstance();
+$validator   = SangiaApiContractValidator::getInstance(); // Undefined type 'SangiaApiContractValidator'.
 $anyTestRan  = false;
 
 foreach ($probeReport as $label => $probe) {
@@ -303,7 +303,7 @@ foreach ($probeReport as $label => $probe) {
             // Generic: cek minimal envelope
             $decoded = json_decode($probe['raw'], true);
             if (!isset($decoded['status'])) {
-                throw new SangiaContractException("Field 'status' tidak ada di envelope");
+                throw new SangiaContractException("Field 'status' tidak ada di envelope"); // Expected type 'Throwable'. Found 'SangiaContractException'.
             }
         }
     });

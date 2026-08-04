@@ -120,7 +120,7 @@ class App
     public function getApiKeyManager(): ApiKeyManager
     {
         if ($this->apiKeyManager === null) {
-            $this->apiKeyManager = new ApiKeyManager($this->db);
+            $this->apiKeyManager = new ApiKeyManager($this->db); // Too many arguments. Expected 0. Found 1.
         }
         return $this->apiKeyManager;
     }
